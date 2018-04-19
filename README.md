@@ -1,6 +1,6 @@
 # vue-ssr-example
 
-> A Vue.js project
+> A todo app
 
 ## 构建
 
