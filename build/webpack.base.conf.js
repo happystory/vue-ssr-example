@@ -8,7 +8,7 @@ module.exports = {
   context: path.resolve(__dirname, '../'),
 
   resolve: {
-    extensions: ['.js', '.jsx', '.vue', 'json'],
+    extensions: ['.js', '.vue', 'json'],
     alias: {
       '@': resolve('src')
     }
@@ -16,12 +16,6 @@ module.exports = {
 
   entry: {
     app: './src/main.js'
-  },
-
-  output: {
-    filename: '[name].[hash:8].js',
-    path: path.join(__dirname, '../dist'),
-    publicPath: ''
   },
 
   module: {
@@ -41,8 +35,9 @@ module.exports = {
         loader: 'vue-loader'
       },
       {
-        test: /\.(js|jsx)$/,
-        loader: 'babel-loader'
+        test: /\.js$/,
+        loader: 'babel-loader',
+        include: [resolve('src')]
       },
       {
         test: /\.css$/,
@@ -70,7 +65,7 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 1024,
-          name: '[name].[hash:7].[ext]'
+          name: 'static/images/[name].[hash:8].[ext]'
         }
       }
     ]

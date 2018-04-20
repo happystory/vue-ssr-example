@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import App from './App'
-
-// 全局样式
-import './assets/styles/global.styl'
+import './assets/styles/global.styl' // 全局样式
 
 /* eslint-disable no-new */
 new Vue({

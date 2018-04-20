@@ -9,7 +9,7 @@
 npm install
 
 # 热更新开发localhost:8000
-npm run dev
+npm run dev # or npm start
 
 # 构建生产版本
 npm run build

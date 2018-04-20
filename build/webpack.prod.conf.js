@@ -1,14 +1,28 @@
 const path = require('path');
+const webpack = require('webpack');
 const merge = require('webpack-merge');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const baseWebpackConfig = require('./webpack.base.conf');
 
 module.exports = merge(baseWebpackConfig, {
+  // new UglifyJsPlugin(/* ... */),
+  // new webpack.DefinePlugin({ "process.env.NODE_ENV": JSON.stringify("production") }),
+  // new webpack.optimize.ModuleConcatenationPlugin(),
+  // new webpack.NoEmitOnErrorsPlugin()
   mode: 'production',
 
   devtool: false,
+
+  output: {
+    filename: 'static/js/[name].[chunkhash:8].js',
+    chunkFilename: 'static/js/[id].[chunkhash:8].js',
+    path: path.join(__dirname, '../dist'),
+    publicPath: ''
+  },
 
   module: {
     rules: [{
@@ -16,7 +30,13 @@ module.exports = merge(baseWebpackConfig, {
       use: [
         // extract-text-webpack-plugin不支持webpack4
         // 参见：https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/749
-        MiniCssExtractPlugin.loader,
+        {
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+            // 处理路径问题
+            publicPath: '../../'
+          }
+        },
         'css-loader', {
           loader: 'postcss-loader',
           options: {
@@ -29,6 +49,16 @@ module.exports = merge(baseWebpackConfig, {
   },
 
   optimization: {
+    minimizer: [
+      // 优化js
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true,
+        sourceMap: false
+      }),
+      // 优化css
+      new OptimizeCSSAssetsPlugin({})
+    ],
     splitChunks: {
       cacheGroups: { // 这里开始设置缓存的 chunks
         commons: {
@@ -50,13 +80,15 @@ module.exports = merge(baseWebpackConfig, {
   },
 
   plugins: [
+    new webpack.HashedModuleIdsPlugin(),
     // 打包前先清空 dist 目录
     new CleanWebpackPlugin(['dist'], {
       root: path.resolve(__dirname, '../')
     }),
     // 提取 css
     new MiniCssExtractPlugin({
-      filename: "[name].[hash:8].css"
+      filename: 'static/css/[name].[hash:8].css',
+      chunkFilename: 'static/css/[id].[chunkhash:8].css'
     }),
     new HtmlWebpackPlugin({
       template: 'index.html',
